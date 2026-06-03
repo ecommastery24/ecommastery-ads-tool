@@ -204,6 +204,10 @@
         <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
         <span>Comparativa de productos</span>
       </button>
+      <button class="type-btn" data-type="referencia" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        <span>Imagen de referencia</span>
+      </button>
     </div>
   </div>
 
@@ -217,6 +221,18 @@
     </div>
     <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)"/>
     <div class="upload-note" id="uploadNote">✓ Imagen cargada — el packaging se describirá con detalle en cada prompt generado</div>
+  </div>
+
+  <!-- IMAGEN DE REFERENCIA -->
+  <div class="card" id="refImageCard" style="display:none">
+    <div class="section-label">2b. Imagen de referencia <span style="font-size:10px;color:#aaa;font-weight:400;text-transform:none">(opcional — ad que te gusta o que está funcionando bien)</span></div>
+    <div class="upload-zone" id="uploadRefZone" onclick="document.getElementById('refFileInput').click()">
+      <div class="icon">🎯</div>
+      <p id="refUploadLabel">Sube un ad de referencia — la IA analizará su estructura, composición y estilo para replicarlo con tu producto</p>
+      <img id="refPreviewImg" alt="preview referencia"/>
+    </div>
+    <input type="file" id="refFileInput" accept="image/*" style="display:none" onchange="handleRefUpload(event)"/>
+    <div class="upload-note" id="refUploadNote">✓ Referencia cargada — se analizará la composición, colores y estructura del ad</div>
   </div>
 
   <!-- PRODUCTO -->
@@ -531,7 +547,8 @@ const typeLabels={
   urgencia:'Imagen de urgencia u oferta limitada que activa la compra inmediata',
   producto_hero:'Imagen hero del producto — packaging premium, iluminación de estudio, presentación aspiracional',
   el_problema:'Imagen que muestra el dolor o problema del avatar antes de descubrir el producto',
-  comparativa_producto:'Imagen comparativa lado a lado entre dos productos similares destacando ventajas del nuestro'
+  comparativa_producto:'Imagen comparativa lado a lado entre dos productos similares destacando ventajas del nuestro',
+  referencia:'Imagen basada en una referencia visual adjunta — replicar su estructura, composición y estilo adaptado al producto'
 };
 const tips={
   lifestyle:'Tip: En ChatGPT usa GPT-4o, adjunta la imagen del producto y pega este prompt. Especifica siempre la iluminación.',
@@ -540,10 +557,14 @@ const tips={
   comparativa:'Tip: Genera cada columna por separado en la IA y únelas en Canva.'
 };
 
+let refImageBase64=null;
+let refImageMediaType='image/jpeg';
+
 function selectType(btn){
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   selectedType=btn.dataset.type;
+  document.getElementById('refImageCard').style.display = selectedType==='referencia' ? 'block' : 'none';
 }
 function toggleChip(el,group){
   const val=el.dataset.val;
@@ -563,7 +584,19 @@ function toggleSingle(el, group){
     else selectedFocus=el.dataset.val;
   }
 }
-function handleUpload(e){
+function handleRefUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  refImageMediaType=file.type||'image/jpeg';
+  const r=new FileReader();
+  r.onload=ev=>{
+    refImageBase64=ev.target.result.split(',')[1];
+    const img=document.getElementById('refPreviewImg');
+    img.src=ev.target.result;img.style.display='block';
+    document.getElementById('refUploadLabel').textContent=file.name;
+    document.getElementById('uploadRefZone').classList.add('has-image');
+    document.getElementById('refUploadNote').classList.add('visible');
+  };r.readAsDataURL(file);
+}
   const file=e.target.files[0];if(!file)return;
   imageMediaType=file.type||'image/jpeg';
   const r=new FileReader();
@@ -626,11 +659,19 @@ function extractJSON(raw){
 
 async function callAPI(system,userMsg){
   let messages;
+  const contentArr=[];
   if(imageBase64){
-    messages=[{role:'user',content:[
-      {type:'image',source:{type:'base64',media_type:imageMediaType,data:imageBase64}},
-      {type:'text',text:userMsg+'\n\nAnaliza la imagen del producto adjunta para describir el packaging con precisión en los prompts.'}
-    ]}];
+    contentArr.push({type:'image',source:{type:'base64',media_type:imageMediaType,data:imageBase64}});
+  }
+  if(refImageBase64 && selectedType==='referencia'){
+    contentArr.push({type:'image',source:{type:'base64',media_type:refImageMediaType,data:refImageBase64}});
+  }
+  if(contentArr.length>0){
+    let txt=userMsg;
+    if(imageBase64) txt+='\n\nPrimera imagen adjunta: el producto — describe su packaging exacto en el prompt.';
+    if(refImageBase64 && selectedType==='referencia') txt+='\n\nSegunda imagen adjunta: imagen de REFERENCIA publicitaria — analiza su composición, estructura, paleta, disposición de elementos y estilo visual para replicarlo con el producto.';
+    contentArr.push({type:'text',text:txt});
+    messages=[{role:'user',content:contentArr}];
   }else{
     messages=[{role:'user',content:userMsg}];
   }
