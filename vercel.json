@@ -2,22 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/generate.js",
+      "src": "generate.js",
       "use": "@vercel/node"
     },
     {
-      "src": "public/**",
+      "src": "index.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/generate",
-      "dest": "/api/generate.js"
+      "dest": "/generate.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/index.html"
     }
   ]
 }
