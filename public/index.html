@@ -598,6 +598,7 @@ function handleRefUpload(e){
     document.getElementById('refUploadNote').classList.add('visible');
   };r.readAsDataURL(file);
 }
+function handleUpload(e){
   const file=e.target.files[0];if(!file)return;
   imageMediaType=file.type||'image/jpeg';
   const r=new FileReader();
