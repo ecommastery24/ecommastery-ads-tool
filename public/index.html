@@ -10,15 +10,15 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Inter',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
 
-    .topbar{background:#1a1a1a;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-    .topbar-brand{color:#fff;font-size:15px;font-weight:600;letter-spacing:.01em}
-    .topbar-brand span{color:#c9f04a}
-    .topbar-sub{color:#888;font-size:12px}
+    .topbar{background:#000;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2200}
+    .topbar-logo{height:44px;object-fit:contain}
+    .topbar-sub{color:#8a7a50;font-size:12px;letter-spacing:.05em;display:flex;align-items:center;gap:6px}
 
-    .hero{background:#1a1a1a;padding:32px 24px 40px;text-align:center;border-bottom:1px solid #2a2a2a}
-    .hero h1{color:#fff;font-size:26px;font-weight:700;margin-bottom:8px}
-    .hero h1 span{color:#c9f04a}
-    .hero p{color:#aaa;font-size:14px;max-width:480px;margin:0 auto}
+    .hero{background:linear-gradient(160deg,#0a0a0a 0%,#1a1200 100%);padding:36px 24px 44px;text-align:center;border-bottom:1px solid #2a2200;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.12) 0%,transparent 70%);pointer-events:none}
+    .hero h1{color:#fff;font-size:26px;font-weight:700;margin-bottom:8px;position:relative}
+    .hero h1 span{background:linear-gradient(135deg,#f5d060,#c9940a,#f5d060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{color:#8a7a50;font-size:14px;max-width:480px;margin:0 auto;position:relative}
 
     .container{max-width:720px;margin:0 auto;padding:24px 16px 60px}
 
@@ -30,18 +30,18 @@
     .type-btn{background:#f5f4f0;border:1.5px solid #e8e6e0;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px}
     .type-btn svg{width:22px;height:22px;stroke:#888;fill:none;stroke-width:1.8}
     .type-btn span{font-size:11px;color:#666;line-height:1.3;font-weight:500}
-    .type-btn.active{background:#f0f9e0;border-color:#a8d84e;color:#3a6b00}
-    .type-btn.active svg{stroke:#5a9a00}
-    .type-btn.active span{color:#3a6b00}
+    .type-btn.active{background:#1a1200;border-color:#c9940a}
+    .type-btn.active svg{stroke:#f5d060}
+    .type-btn.active span{color:#f5d060}
 
     .upload-zone{border:1.5px dashed #d0cec8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:#fafaf8;transition:all .15s;margin-bottom:12px}
-    .upload-zone:hover{border-color:#aaa}
-    .upload-zone.has-image{border-style:solid;border-color:#a8d84e;background:#f0f9e0}
+    .upload-zone:hover{border-color:#c9940a}
+    .upload-zone.has-image{border-style:solid;border-color:#c9940a;background:#fff8e8}
     .upload-zone p{font-size:13px;color:#888;margin-top:6px}
     .upload-zone .icon{font-size:28px;color:#bbb}
     .upload-zone img{max-height:140px;border-radius:8px;margin:10px auto 0;display:none}
     .upload-zone.has-image img{display:block}
-    .upload-note{font-size:11px;color:#5a9a00;margin-top:6px;display:none}
+    .upload-note{font-size:11px;color:#c9940a;margin-top:6px;display:none}
     .upload-note.visible{display:block}
     .required-tag{display:inline-block;background:#fff0f0;color:#c0392b;border-radius:20px;font-size:10px;padding:1px 8px;margin-left:6px;font-weight:500}
 
@@ -51,32 +51,33 @@
     @media(max-width:480px){.form-row.three{grid-template-columns:1fr 1fr}}
     label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
     input[type=text],select,textarea{width:100%;font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;border:1px solid #e0ddd8;border-radius:8px;background:#fafaf8;color:#1a1a1a;outline:none;transition:border .15s}
-    input[type=text]:focus,select:focus,textarea:focus{border-color:#a8d84e;background:#fff}
+    input[type=text]:focus,select:focus,textarea:focus{border-color:#c9940a;background:#fff}
     textarea{min-height:72px;resize:vertical}
 
     .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
     .chip{background:#f5f4f0;border:1px solid #e0ddd8;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:12px;color:#555;transition:all .15s;white-space:nowrap;font-weight:500}
-    .chip.angle.active{background:#e8f5e9;border-color:#81c784;color:#2e7d32}
-    .chip.focus.active{background:#fce4ec;border-color:#f48fb1;color:#880e4f}
+    .chip:hover{border-color:#c9940a;color:#c9940a}
+    .chip.angle.active{background:#1a1200;border-color:#c9940a;color:#f5d060}
     .chip.life.active{background:#ede7f6;border-color:#9575cd;color:#4527a0}
     .chip.pain.active{background:#fce4ec;border-color:#f48fb1;color:#880e4f}
-    .chip.titulo.active{background:#fff8e1;border-color:#ffca28;color:#7b5800}
+    .chip.titulo.active{background:#1a1200;border-color:#c9940a;color:#f5d060}
     .chip.var.active{background:#e0f7fa;border-color:#4dd0e1;color:#006064}
+    .chip.sticker.active{background:#fff8e1;border-color:#f5d060;color:#7b5800}
 
     .divider{height:1px;background:#f0ede8;margin:12px 0}
 
     .range-row{display:flex;align-items:center;gap:12px;margin-top:10px}
     .range-row label{margin:0;white-space:nowrap;min-width:140px}
-    .range-row input[type=range]{flex:1;accent-color:#5a9a00}
+    .range-row input[type=range]{flex:1;accent-color:#c9940a}
     .range-val{font-size:14px;font-weight:600;min-width:20px;color:#1a1a1a}
 
-    .generate-btn{width:100%;padding:14px;font-size:15px;font-weight:600;cursor:pointer;border-radius:10px;background:#c9f04a;border:none;color:#1a1a1a;margin-top:4px;transition:all .15s;letter-spacing:.01em}
-    .generate-btn:hover{background:#b8e03a;transform:translateY(-1px)}
+    .generate-btn{width:100%;padding:14px;font-size:15px;font-weight:600;cursor:pointer;border-radius:10px;background:linear-gradient(135deg,#f5d060,#c9940a);border:none;color:#0e0e0e;margin-top:4px;transition:all .15s;letter-spacing:.02em}
+    .generate-btn:hover{background:linear-gradient(135deg,#ffe07a,#e0a820);transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,148,10,.25)}
     .generate-btn:active{transform:translateY(0)}
 
     .loading{display:none;align-items:center;justify-content:center;gap:10px;padding:16px 0;color:#666;font-size:13px}
     .loading.visible{display:flex}
-    .spinner{width:18px;height:18px;border:2px solid #e0ddd8;border-top-color:#5a9a00;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    .spinner{width:18px;height:18px;border:2px solid #e0ddd8;border-top-color:#c9940a;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     .results{display:none;margin-top:20px}
@@ -86,7 +87,7 @@
     .result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     .result-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em}
     .copy-btn{font-size:12px;padding:5px 12px;cursor:pointer;border-radius:8px;background:#f5f4f0;border:1px solid #e0ddd8;font-weight:500;transition:all .15s}
-    .copy-btn:hover{background:#e8e6e0}
+    .copy-btn:hover{border-color:#c9940a;color:#c9940a}
 
     .titulo-display{font-size:24px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:4px}
     .subtitulo-display{font-size:15px;font-weight:400;color:#555;line-height:1.4;margin-bottom:6px;font-style:italic}
@@ -95,12 +96,12 @@
     .result-text{font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;word-break:break-word}
 
     .var-block{background:#fafaf8;border:1px solid #e8e6e0;border-radius:10px;padding:14px;margin-bottom:8px}
-    .var-label{font-size:11px;font-weight:600;color:#5a9a00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+    .var-label{font-size:11px;font-weight:600;color:#c9940a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
     .var-diff{font-size:11px;color:#888;font-style:italic;margin-bottom:8px}
 
     .regen-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
     .regen-btn{flex:1;min-width:120px;padding:10px;font-size:13px;cursor:pointer;border-radius:8px;background:#f5f4f0;border:1px solid #e0ddd8;font-weight:500;transition:all .15s}
-    .regen-btn:hover{background:#e8e6e0}
+    .regen-btn:hover{border-color:#c9940a;color:#c9940a}
 
     .error{font-size:12px;color:#c0392b;margin-top:8px;display:none;background:#fff0f0;padding:10px;border-radius:8px}
     .error.visible{display:block}
@@ -110,10 +111,14 @@
     .limit-bar{margin-top:10px;padding:10px 14px;background:#f5f4f0;border-radius:8px;display:flex;align-items:center;gap:12px}
     .limit-bar span{font-size:12px;color:#666;white-space:nowrap;min-width:200px}
     .limit-track{flex:1;height:6px;background:#e0ddd8;border-radius:10px;overflow:hidden}
-    .limit-fill{height:100%;background:#c9f04a;border-radius:10px;transition:width .3s}
+    .limit-fill{height:100%;background:linear-gradient(90deg,#c9940a,#f5d060);border-radius:10px;transition:width .3s}
     .limit-bar.warning span{color:#c0392b}
     .limit-bar.warning .limit-fill{background:#e74c3c}
-    .tip-box{background:#f0f9e0;border:1px solid #c5e88a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#3a6b00;line-height:1.6}
+    .tip-box{background:#fff8e8;border:1px solid #f5d060;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#7b5800;line-height:1.6}
+
+    .price-row{display:flex;gap:10px;align-items:flex-end;margin-top:8px}
+    .price-row input{flex:1}
+
     .admin-zone{position:fixed;bottom:16px;right:16px;z-index:999}
     .admin-dot{width:10px;height:10px;background:#2a2a2a;border-radius:50%;cursor:pointer;opacity:.3;transition:opacity .2s}
     .admin-dot:hover{opacity:.8}
@@ -122,17 +127,17 @@
     .admin-box input{width:100%;box-sizing:border-box;background:#2a2a2a;border:1px solid #444;border-radius:6px;padding:7px 10px;color:#fff;font-size:13px;outline:none}
     .admin-box input::placeholder{color:#666}
     .admin-msg{font-size:11px;margin-top:6px;text-align:center;display:none}
-    .admin-msg.ok{color:#c9f04a;display:block}
+    .admin-msg.ok{color:#f5d060;display:block}
     .admin-msg.err{color:#e74c3c;display:block}
-    .admin-badge{display:none;background:#c9f04a;color:#1a1a1a;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .admin-badge{display:none;background:linear-gradient(135deg,#f5d060,#c9940a);color:#0e0e0e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px}
     .admin-badge.visible{display:inline-block}
   </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-brand">Ecommastery <span>VIP</span><span class="admin-badge" id="adminBadge">ADMIN</span></div>
-  <div class="topbar-sub">Generador de Ads con IA</div>
+  <img src="https://i.imgur.com/dhqzFPv.png" alt="EcomMastery VIP" class="topbar-logo"/>
+  <div class="topbar-sub">Generador de Ads con IA <span class="admin-badge" id="adminBadge">ADMIN</span></div>
 </div>
 
 <!-- ADMIN HIDDEN ZONE -->
@@ -336,9 +341,35 @@
     </div>
   </div>
 
+  <!-- STICKERS OPCIONALES -->
+  <div class="card">
+    <div class="section-label">7. Stickers / badges en la imagen <span style="font-size:10px;color:#aaa;font-weight:400;text-transform:none">(opcional, podés elegir varios)</span></div>
+    <p class="hint">Se incluirán en el prompt como elementos visuales superpuestos en la imagen.</p>
+    <div class="chips">
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="sticker de 2x1 (lleva 2 paga 1)">2x1</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="badge de 50% OFF en rojo llamativo">50% OFF</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="badge de 40% OFF en rojo llamativo">40% OFF</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="badge de 30% OFF en rojo llamativo">30% OFF</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="sticker de envío contra reembolso">Contra reembolso</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="sticker de envío gratis">Envío gratis</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="sticker de pago seguro / compra protegida">Pago seguro</div>
+      <div class="chip sticker" onclick="toggleChip(this,'sticker')" data-val="sticker de garantía de devolución">Garantía devolución</div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div>
+        <label>Precio actual</label>
+        <input type="text" id="precioActual" placeholder="Ej: 29,99€"/>
+      </div>
+      <div>
+        <label>Precio anterior tachado (opcional)</label>
+        <input type="text" id="precioAnterior" placeholder="Ej: 59,99€"/>
+      </div>
+    </div>
+  </div>
+
   <!-- VARIACIONES -->
   <div class="card">
-    <div class="section-label">7. Variaciones para Meta Ads</div>
+    <div class="section-label">8. Variaciones para Meta Ads</div>
     <p class="hint">Genera múltiples prompts con la misma temática pero diferente escena — para rotar creativos y no quemar el anuncio.</p>
     <label>¿Qué varía entre cada versión?</label>
     <div class="chips" style="margin-top:6px">
@@ -482,7 +513,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 let selectedType='lifestyle';
-let chips={angle:[],life:[],pain:[],var:['Escena y fondo diferentes','Composición y encuadre distintos','Paleta de colores y mood distintos']};
+let chips={angle:[],life:[],pain:[],var:['Escena y fondo diferentes','Composición y encuadre distintos','Paleta de colores y mood distintos'],sticker:[]};
 let selectedTitulo='';
 let selectedFocus='';
 let imageBase64=null;
@@ -565,7 +596,10 @@ function buildCtx(){
     varCount:document.getElementById('varCount').value,
     varFactors:chips.var.join(', ')||'escena, composición y mood',
     type:selectedType,
-    titulo:selectedTitulo||'máximo impacto que detenga el scroll'
+    titulo:selectedTitulo||'máximo impacto que detenga el scroll',
+    stickers:chips.sticker.join(', '),
+    precioActual:document.getElementById('precioActual').value.trim(),
+    precioAnterior:document.getElementById('precioAnterior').value.trim()
   };
 }
 
@@ -631,7 +665,10 @@ async function generateAll(){
 
   const system=`Eres un experto en publicidad de ecommerce, copywriting de alto impacto y generación de imágenes con IA para Meta Ads.
 Responde ÚNICAMENTE con JSON válido puro. Sin texto antes ni después. Sin backticks. Sin bloques de código.
-El JSON debe tener exactamente estas claves: titulo, copy, prompt_imagen, variaciones (array de objetos con claves: diferencia, prompt).`;
+El JSON debe tener exactamente estas claves: titulo, subtitulo, copy, prompt_imagen, variaciones (array de objetos con claves: titulo_var, subtitulo_var, diferencia, prompt).`;
+
+  const stickerBlock = ctx.stickers ? `\nStickers/badges en la imagen: ${ctx.stickers}` : '';
+  const precioBlock = ctx.precioActual ? `\nPrecio: ${ctx.precioActual}${ctx.precioAnterior ? ` (antes: ${ctx.precioAnterior} tachado)` : ''}` : '';
 
   const userMsg=`Crea un anuncio completo para Meta Ads.
 
@@ -641,16 +678,16 @@ Beneficio: ${ctx.benefit||'no especificado'}
 Tipo de imagen: ${typeLabels[ctx.type]}
 Ángulo de venta: ${ctx.angles}
 Formato: ${ctx.size} px
-Avatar: ${avatarStr}${refBlock}
+Avatar: ${avatarStr}${refBlock}${stickerBlock}${precioBlock}
 
 Genera este JSON puro (sin backticks):
 {
   "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación. Corto y que detenga el scroll.",
-  "subtitulo": "1 línea corta de apoyo (máx 8 palabras) que refuerce el título — puede ser el beneficio principal, prueba social o una micro-promesa. Ej: 'Resultados visibles desde el primer uso' o '+4.800 personas ya lo comprobaron'.",
-  "copy": "60-120 palabras. Gancho que apunte al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
-  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), calidad 8K. El modelo/escena debe resonar con el avatar. IMPORTANTE: especifica DOS niveles de texto superpuesto en la imagen: (1) TÍTULO en tipografía bold grande, posición superior o central, color contrastante — usa exactamente el titulo generado; (2) SUBTÍTULO en tipografía más pequeña y ligera debajo del título — usa exactamente el subtitulo generado. Especifica fuente, tamaño, color y posición exacta de cada texto.",
+  "subtitulo": "1 línea corta de apoyo (máx 8 palabras) — beneficio, prueba social o micro-promesa.",
+  "copy": "60-120 palabras. Gancho al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
+  "prompt_imagen": "Prompt ultra-detallado para DALL-E/ChatGPT: escena, composición, iluminación, paleta, mood, estilo fotográfico hyperrealistic commercial photography, packaging exacto del producto (describe la imagen adjunta), calidad 8K, avatar en escena. TEXTO EN IMAGEN: (1) TÍTULO bold grande usando exactamente el titulo generado, especifica tipografía/posición/color; (2) SUBTÍTULO más pequeño debajo usando exactamente el subtitulo generado.${ctx.stickers ? ` STICKERS: incluye visualmente ${ctx.stickers} como elementos superpuestos bien diseñados.` : ''}${ctx.precioActual ? ` PRECIO: muestra ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado encima` : ''} en tipografía bold llamativa.` : ''}",
   "variaciones": [
-    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"diferencia": "qué cambió respecto al prompt principal en variación ${i+1} (${ctx.varFactors})", "prompt": "prompt completo ultra-detallado para variación ${i+1} incluyendo los dos niveles de texto: título y subtítulo"}`).join(',\n    ')}
+    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"titulo_var": "título DIFERENTE al principal — mismo ángulo de venta pero distinta redacción, 2-4 palabras", "subtitulo_var": "subtítulo diferente al principal — misma propuesta de valor pero distinto enfoque", "diferencia": "qué cambió en escena/composición/paleta en variación ${i+1}", "prompt": "prompt completo ultra-detallado variación ${i+1} — misma temática y avatar pero ${ctx.varFactors} diferentes. Incluir titulo_var y subtitulo_var como texto superpuesto.${ctx.stickers ? ` Mantener stickers: ${ctx.stickers}.` : ''}${ctx.precioActual ? ` Mantener precio ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado` : ''}.` : ''}"}`).join(',\n    ')}
   ]
 }
 
@@ -673,7 +710,13 @@ ${langInstr}`;
       parsed.variaciones.forEach((v,i)=>{
         const div=document.createElement('div');
         div.className='var-block';
-        div.innerHTML=`<div class="var-label">Variación ${i+1}</div><div class="var-diff">↳ ${v.diferencia||''}</div><div class="result-text" id="var${i}">${v.prompt||''}</div><button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar</button>`;
+        div.innerHTML=`
+          <div class="var-label">Variación ${i+1}</div>
+          ${v.titulo_var?`<div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px">${v.titulo_var}</div>`:''}
+          ${v.subtitulo_var?`<div style="font-size:12px;color:#555;font-style:italic;margin-bottom:6px">${v.subtitulo_var}</div>`:''}
+          <div class="var-diff">↳ ${v.diferencia||''}</div>
+          <div class="result-text" id="var${i}">${v.prompt||''}</div>
+          <button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar prompt</button>`;
         varContainer.appendChild(div);
       });
     }
