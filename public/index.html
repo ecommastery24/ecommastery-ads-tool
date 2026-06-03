@@ -131,10 +131,39 @@
     .admin-msg.err{color:#e74c3c;display:block}
     .admin-badge{display:none;background:linear-gradient(135deg,#f5d060,#c9940a);color:#0e0e0e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px}
     .admin-badge.visible{display:inline-block}
+
+    /* LOGIN SCREEN */
+    .login-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    .login-screen.hidden{display:none}
+    .login-box{background:#0e0e0e;border:1px solid #2a2200;border-radius:18px;padding:40px 32px;max-width:400px;width:100%;text-align:center}
+    .login-logo{height:70px;object-fit:contain;margin-bottom:28px}
+    .login-title{color:#fff;font-size:18px;font-weight:600;margin-bottom:6px}
+    .login-sub{color:#8a7a50;font-size:13px;margin-bottom:28px;line-height:1.5}
+    .login-input{width:100%;box-sizing:border-box;background:#161410;border:1px solid #2a2200;border-radius:10px;padding:13px 16px;color:#e8e0cc;font-size:15px;outline:none;text-align:center;letter-spacing:.05em;font-family:'Inter',sans-serif;transition:border .15s}
+    .login-input:focus{border-color:#c9940a}
+    .login-input::placeholder{color:#5a4a30;letter-spacing:0}
+    .login-btn{width:100%;margin-top:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;border-radius:10px;background:linear-gradient(135deg,#f5d060,#c9940a);border:none;color:#0e0e0e;transition:all .15s;font-family:'Inter',sans-serif}
+    .login-btn:hover{background:linear-gradient(135deg,#ffe07a,#e0a820);transform:translateY(-1px)}
+    .login-err{font-size:12px;color:#e07050;margin-top:10px;min-height:18px}
+    .login-footer{color:#3a3020;font-size:11px;margin-top:20px}
   </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <img src="https://i.imgur.com/dhqzFPv.png" alt="EcomMastery VIP" class="login-logo"/>
+    <div class="login-title">Acceso exclusivo VIP</div>
+    <div class="login-sub">Ingresa tu contraseña de miembro para acceder a la herramienta</div>
+    <input type="password" class="login-input" id="loginInput" placeholder="Contraseña VIP" onkeydown="if(event.key==='Enter')checkLogin()"/>
+    <button class="login-btn" onclick="checkLogin()">Ingresar →</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-footer">Solo para miembros de EcomMastery VIP Community</div>
+  </div>
+</div>
+
+<div id="mainApp" style="display:none">
 <div class="topbar">
   <img src="https://i.imgur.com/dhqzFPv.png" alt="EcomMastery VIP" class="topbar-logo"/>
   <div class="topbar-sub">Generador de Ads con IA <span class="admin-badge" id="adminBadge">ADMIN</span></div>
@@ -460,6 +489,7 @@
 
   </div>
 </div>
+</div><!-- end mainApp -->
 
 <script>
 const DAILY_LIMIT = 20;
@@ -824,6 +854,36 @@ function copyEl(id){
     btns.forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(id)){const orig=b.textContent;b.textContent='✓ Copiado';setTimeout(()=>{b.textContent=orig;},2000);}});
   });
 }
+
+// LOGIN
+const VIP_PASSWORD = 'EcomMastery26';
+function checkLogin(){
+  const val = document.getElementById('loginInput').value.trim();
+  const err = document.getElementById('loginErr');
+  if(val === VIP_PASSWORD || val === ADMIN_CODE){
+    sessionStorage.setItem('ecom_vip_access','1');
+    if(val === ADMIN_CODE){
+      sessionStorage.setItem('ecom_admin','1');
+      document.getElementById('adminBadge').classList.add('visible');
+    }
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainApp').style.display='block';
+    updateLimitBar();
+  } else {
+    err.textContent = '❌ Contraseña incorrecta. Verifica tu acceso en la comunidad VIP.';
+    document.getElementById('loginInput').value='';
+    document.getElementById('loginInput').focus();
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  if(sessionStorage.getItem('ecom_vip_access')==='1'){
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainApp').style.display='block';
+    if(isAdmin()) document.getElementById('adminBadge').classList.add('visible');
+  }
+  updateLimitBar();
+  document.getElementById('loginInput')?.focus();
+});
 </script>
 </body>
 </html>
