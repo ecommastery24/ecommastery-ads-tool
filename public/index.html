@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de Ads — Ecommastery VIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
+
+    .topbar{background:#1a1a1a;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+    .topbar-brand{color:#fff;font-size:15px;font-weight:600;letter-spacing:.01em}
+    .topbar-brand span{color:#c9f04a}
+    .topbar-sub{color:#888;font-size:12px}
+
+    .hero{background:#1a1a1a;padding:32px 24px 40px;text-align:center;border-bottom:1px solid #2a2a2a}
+    .hero h1{color:#fff;font-size:26px;font-weight:700;margin-bottom:8px}
+    .hero h1 span{color:#c9f04a}
+    .hero p{color:#aaa;font-size:14px;max-width:480px;margin:0 auto}
+
+    .container{max-width:720px;margin:0 auto;padding:24px 16px 60px}
+
+    .card{background:#fff;border:1px solid #e8e6e0;border-radius:14px;padding:20px;margin-bottom:16px}
+    .section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+
+    .type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    @media(min-width:480px){.type-grid{grid-template-columns:repeat(4,1fr)}}
+    .type-btn{background:#f5f4f0;border:1.5px solid #e8e6e0;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .type-btn svg{width:22px;height:22px;stroke:#888;fill:none;stroke-width:1.8}
+    .type-btn span{font-size:11px;color:#666;line-height:1.3;font-weight:500}
+    .type-btn.active{background:#f0f9e0;border-color:#a8d84e;color:#3a6b00}
+    .type-btn.active svg{stroke:#5a9a00}
+    .type-btn.active span{color:#3a6b00}
+
+    .upload-zone{border:1.5px dashed #d0cec8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:#fafaf8;transition:all .15s;margin-bottom:12px}
+    .upload-zone:hover{border-color:#aaa}
+    .upload-zone.has-image{border-style:solid;border-color:#a8d84e;background:#f0f9e0}
+    .upload-zone p{font-size:13px;color:#888;margin-top:6px}
+    .upload-zone .icon{font-size:28px;color:#bbb}
+    .upload-zone img{max-height:140px;border-radius:8px;margin:10px auto 0;display:none}
+    .upload-zone.has-image img{display:block}
+    .upload-note{font-size:11px;color:#5a9a00;margin-top:6px;display:none}
+    .upload-note.visible{display:block}
+    .required-tag{display:inline-block;background:#fff0f0;color:#c0392b;border-radius:20px;font-size:10px;padding:1px 8px;margin-left:6px;font-weight:500}
+
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .form-row.full{grid-template-columns:1fr}
+    .form-row.three{grid-template-columns:1fr 1fr 1fr}
+    @media(max-width:480px){.form-row.three{grid-template-columns:1fr 1fr}}
+    label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
+    input[type=text],select,textarea{width:100%;font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;border:1px solid #e0ddd8;border-radius:8px;background:#fafaf8;color:#1a1a1a;outline:none;transition:border .15s}
+    input[type=text]:focus,select:focus,textarea:focus{border-color:#a8d84e;background:#fff}
+    textarea{min-height:72px;resize:vertical}
+
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+    .chip{background:#f5f4f0;border:1px solid #e0ddd8;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:12px;color:#555;transition:all .15s;white-space:nowrap;font-weight:500}
+    .chip.angle.active{background:#e8f5e9;border-color:#81c784;color:#2e7d32}
+    .chip.life.active{background:#ede7f6;border-color:#9575cd;color:#4527a0}
+    .chip.pain.active{background:#fce4ec;border-color:#f48fb1;color:#880e4f}
+    .chip.titulo.active{background:#fff8e1;border-color:#ffca28;color:#7b5800}
+    .chip.var.active{background:#e0f7fa;border-color:#4dd0e1;color:#006064}
+
+    .divider{height:1px;background:#f0ede8;margin:12px 0}
+
+    .range-row{display:flex;align-items:center;gap:12px;margin-top:10px}
+    .range-row label{margin:0;white-space:nowrap;min-width:140px}
+    .range-row input[type=range]{flex:1;accent-color:#5a9a00}
+    .range-val{font-size:14px;font-weight:600;min-width:20px;color:#1a1a1a}
+
+    .generate-btn{width:100%;padding:14px;font-size:15px;font-weight:600;cursor:pointer;border-radius:10px;background:#c9f04a;border:none;color:#1a1a1a;margin-top:4px;transition:all .15s;letter-spacing:.01em}
+    .generate-btn:hover{background:#b8e03a;transform:translateY(-1px)}
+    .generate-btn:active{transform:translateY(0)}
+
+    .loading{display:none;align-items:center;justify-content:center;gap:10px;padding:16px 0;color:#666;font-size:13px}
+    .loading.visible{display:flex}
+    .spinner{width:18px;height:18px;border:2px solid #e0ddd8;border-top-color:#5a9a00;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .results{display:none;margin-top:20px}
+    .results.visible{display:block}
+
+    .result-card{background:#fff;border:1px solid #e8e6e0;border-radius:14px;padding:20px;margin-bottom:12px}
+    .result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .result-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em}
+    .copy-btn{font-size:12px;padding:5px 12px;cursor:pointer;border-radius:8px;background:#f5f4f0;border:1px solid #e0ddd8;font-weight:500;transition:all .15s}
+    .copy-btn:hover{background:#e8e6e0}
+
+    .titulo-display{font-size:24px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:4px}
+    .titulo-sub{font-size:11px;color:#aaa}
+
+    .result-text{font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+
+    .var-block{background:#fafaf8;border:1px solid #e8e6e0;border-radius:10px;padding:14px;margin-bottom:8px}
+    .var-label{font-size:11px;font-weight:600;color:#5a9a00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+    .var-diff{font-size:11px;color:#888;font-style:italic;margin-bottom:8px}
+
+    .regen-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    .regen-btn{flex:1;min-width:120px;padding:10px;font-size:13px;cursor:pointer;border-radius:8px;background:#f5f4f0;border:1px solid #e0ddd8;font-weight:500;transition:all .15s}
+    .regen-btn:hover{background:#e8e6e0}
+
+    .error{font-size:12px;color:#c0392b;margin-top:8px;display:none;background:#fff0f0;padding:10px;border-radius:8px}
+    .error.visible{display:block}
+
+    .hint{font-size:12px;color:#999;margin-bottom:10px;line-height:1.5}
+
+    .tip-box{background:#f0f9e0;border:1px solid #c5e88a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#3a6b00;line-height:1.6}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">Ecommastery <span>VIP</span></div>
+  <div class="topbar-sub">Generador de Ads con IA</div>
+</div>
+
+<div class="hero">
+  <h1>Crea tus <span>imágenes publicitarias</span> en segundos</h1>
+  <p>Título + copy + prompt de imagen para Meta Ads, todo generado con IA a partir de tu producto y avatar.</p>
+</div>
+
+<div class="container">
+
+  <!-- TIPO DE IMAGEN -->
+  <div class="card">
+    <div class="section-label">1. Tipo de imagen</div>
+    <div class="type-grid">
+      <button class="type-btn active" data-type="lifestyle" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <span>Lifestyle</span>
+      </button>
+      <button class="type-btn" data-type="copy" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span>Con texto / copy</span>
+      </button>
+      <button class="type-btn" data-type="antesdespues" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+        <span>Antes y después</span>
+      </button>
+      <button class="type-btn" data-type="comparativa" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/></svg>
+        <span>Comparativa</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- IMAGEN PRODUCTO -->
+  <div class="card">
+    <div class="section-label">2. Imagen del producto <span class="required-tag">obligatorio</span></div>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <div class="icon">📦</div>
+      <p id="uploadLabel">Sube la foto del producto — se usará para describir el packaging exacto en el prompt</p>
+      <img id="previewImg" alt="preview producto"/>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)"/>
+    <div class="upload-note" id="uploadNote">✓ Imagen cargada — el packaging se describirá con detalle en cada prompt generado</div>
+  </div>
+
+  <!-- PRODUCTO -->
+  <div class="card">
+    <div class="section-label">3. Producto</div>
+    <div class="form-row">
+      <div><label>Nombre del producto</label><input type="text" id="productName" placeholder="Ej: Blanqueador Dental WHITEBRO"/></div>
+      <div><label>Categoría</label>
+        <select id="category">
+          <option value="">Selecciona...</option>
+          <option value="Salud / Belleza">Salud / Belleza</option>
+          <option value="Suplementos / Nutrición">Suplementos / Nutrición</option>
+          <option value="Mascotas">Mascotas</option>
+          <option value="Ropa / Moda">Ropa / Moda</option>
+          <option value="Hogar / Decoración">Hogar / Decoración</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row full">
+      <label>Beneficio principal / propuesta de valor</label>
+      <textarea id="benefit" placeholder="Ej: Blanquea los dientes desde el primer uso sin alterar el esmalte natural..."></textarea>
+    </div>
+    <div class="form-row">
+      <div><label>Formato</label>
+        <select id="size">
+          <option value="1080x1080">1080×1080 (feed cuadrado)</option>
+          <option value="1080x1350">1080×1350 (feed 4:5)</option>
+          <option value="1080x1920">1080×1920 (stories)</option>
+          <option value="1200x628">1200×628 (banner)</option>
+        </select>
+      </div>
+      <div><label>Idioma</label>
+        <select id="lang"><option value="Español">Español</option><option value="Inglés">Inglés</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVATAR -->
+  <div class="card">
+    <div class="section-label">4. Avatar / público objetivo</div>
+    <div class="form-row three">
+      <div><label>Género</label>
+        <select id="avatarGender"><option value="">Cualquiera</option><option value="Mujer">Mujer</option><option value="Hombre">Hombre</option><option value="Ambos">Ambos</option></select>
+      </div>
+      <div><label>Edad</label>
+        <select id="avatarAge"><option value="">Cualquiera</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44">35–44</option><option value="45-54">45–54</option><option value="55+">55+</option></select>
+      </div>
+      <div><label>NSE</label>
+        <select id="avatarNse"><option value="">Cualquiera</option><option value="Medio">Medio</option><option value="Medio-alto">Medio-alto</option><option value="Alto / premium">Alto</option></select>
+      </div>
+    </div>
+    <label>Estilo de vida</label>
+    <div class="chips">
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Fitness / deporte">Fitness</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Mamá / familia">Mamá / familia</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Emprendedor/a">Emprendedor/a</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Profesional urbano">Profesional urbano</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Wellness / bienestar">Wellness</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Dueño de mascota">Dueño de mascota</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Natural / orgánico">Natural / orgánico</div>
+      <div class="chip life" onclick="toggleChip(this,'life')" data-val="Lifestyle de lujo">Lifestyle de lujo</div>
+    </div>
+    <div class="divider"></div>
+    <label>Objeciones / dolores principales</label>
+    <div class="chips">
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Precio alto">Precio alto</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Desconfianza online">Desconfianza online</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="¿Realmente funciona?">¿Realmente funciona?</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Falta de tiempo">Falta de tiempo</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Ya probé otros sin resultado">Ya probé otros</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Ingredientes dudosos">Ingredientes dudosos</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Demora en envío">Demora en envío</div>
+      <div class="chip pain" onclick="toggleChip(this,'pain')" data-val="Requiere mucho esfuerzo">Mucho esfuerzo</div>
+    </div>
+    <div class="form-row full" style="margin-top:10px">
+      <label>Descripción libre del avatar (opcional)</label>
+      <textarea id="avatarDesc" placeholder="Ej: Mujer de 38 años, madre de 2 hijos, bebe mucho café, siente vergüenza al sonreír..."></textarea>
+    </div>
+  </div>
+
+  <!-- ENFOQUE TÍTULO -->
+  <div class="card">
+    <div class="section-label">5. Enfoque del título</div>
+    <p class="hint">Elige cómo debe impactar el título — se generará alineado a este enfoque y al dolor del avatar.</p>
+    <div class="chips">
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Apuntar directamente al dolor o vergüenza del avatar">Dolor / vergüenza</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Prueba social — cuántas personas ya lo usaron con éxito">Prueba social</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Testimonio real — frase corta de un cliente satisfecho">Testimonio</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Resultado concreto y rápido que se puede esperar">Resultado rápido</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Curiosidad — que genere intriga y detenga el scroll">Curiosidad</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Objeción resuelta — responde la duda más grande del avatar">Rompe objeción</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Urgencia o escasez para activar la compra inmediata">Urgencia</div>
+      <div class="chip titulo" onclick="toggleSingle(this,'titulo')" data-val="Aspiracional — el estilo de vida que el avatar desea">Aspiracional</div>
+    </div>
+  </div>
+
+  <!-- ÁNGULO COPY -->
+  <div class="card">
+    <div class="section-label">6. Ángulo de venta del copy</div>
+    <div class="chips">
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Romper la objeción principal">Rompe objeción</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Urgencia y escasez">Urgencia / escasez</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Prueba social y confianza">Prueba social</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Transformación visible y real">Transformación</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Estilo de vida aspiracional">Aspiracional</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Apuntar al dolor profundo del avatar">Apunta al dolor</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Generar curiosidad irresistible">Curiosidad</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Autoridad y resultados comprobados">Autoridad</div>
+    </div>
+    <div class="form-row full">
+      <label>Referencia visual / estilo (opcional)</label>
+      <textarea id="reference" placeholder="Ej: Fondo blanco, modelo mujer 30-40, luz natural lateral, estética minimalista premium..."></textarea>
+    </div>
+  </div>
+
+  <!-- VARIACIONES -->
+  <div class="card">
+    <div class="section-label">7. Variaciones para Meta Ads</div>
+    <p class="hint">Genera múltiples prompts con la misma temática pero diferente escena — para rotar creativos y no quemar el anuncio.</p>
+    <label>¿Qué varía entre cada versión?</label>
+    <div class="chips" style="margin-top:6px">
+      <div class="chip var active" onclick="toggleChip(this,'var')" data-val="Escena y fondo diferentes">Escena / fondo</div>
+      <div class="chip var active" onclick="toggleChip(this,'var')" data-val="Composición y encuadre distintos">Composición</div>
+      <div class="chip var active" onclick="toggleChip(this,'var')" data-val="Paleta de colores y mood distintos">Paleta / mood</div>
+      <div class="chip var" onclick="toggleChip(this,'var')" data-val="Perfil demográfico del modelo diferente">Perfil del modelo</div>
+      <div class="chip var" onclick="toggleChip(this,'var')" data-val="Momento del día diferente (mañana, noche, exterior)">Momento del día</div>
+      <div class="chip var" onclick="toggleChip(this,'var')" data-val="Estilo fotográfico diferente (editorial, UGC, minimalista)">Estilo fotográfico</div>
+    </div>
+    <div class="range-row">
+      <label>Número de variaciones</label>
+      <input type="range" min="2" max="5" value="3" step="1" id="varCount" oninput="document.getElementById('varCountVal').textContent=this.value"/>
+      <span class="range-val" id="varCountVal">3</span>
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generateAll()">✦ Generar título + copy + prompts de imagen</button>
+  <div class="error" id="errorMsg"></div>
+
+  <div class="loading" id="loadingBar">
+    <div class="spinner"></div>
+    <span id="loadingMsg">Analizando producto y generando tu ad completo...</span>
+  </div>
+
+  <div class="results" id="results">
+
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">Título del anuncio</span>
+        <button class="copy-btn" onclick="copyEl('tituloDisplay')">Copiar</button>
+      </div>
+      <div class="titulo-display" id="tituloDisplay"></div>
+      <div class="titulo-sub">2–4 palabras · para superponer en la imagen y como headline del ad</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">Copy del anuncio</span>
+        <button class="copy-btn" onclick="copyEl('copyDisplay')">Copiar</button>
+      </div>
+      <div class="result-text" id="copyDisplay"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">Prompt principal — imagen</span>
+        <button class="copy-btn" onclick="copyEl('promptDisplay')">Copiar</button>
+      </div>
+      <div class="result-text" id="promptDisplay"></div>
+      <div class="tip-box" id="tipBox"></div>
+    </div>
+
+    <div class="result-card" id="variationsCard">
+      <div class="result-header">
+        <span class="result-title">Variaciones de imagen</span>
+      </div>
+      <div id="variationsContainer"></div>
+    </div>
+
+    <div class="regen-row">
+      <button class="regen-btn" onclick="generateAll()">↺ Regenerar todo</button>
+      <button class="regen-btn" onclick="regenPart('copy')">↺ Nuevo copy</button>
+      <button class="regen-btn" onclick="regenPart('prompt')">↺ Nuevo prompt</button>
+      <button class="regen-btn" onclick="regenPart('variaciones')">↺ Nuevas variaciones</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let selectedType='lifestyle';
+let chips={angle:[],life:[],pain:[],var:['Escena y fondo diferentes','Composición y encuadre distintos','Paleta de colores y mood distintos']};
+let selectedTitulo='';
+let imageBase64=null;
+let imageMediaType='image/jpeg';
+let lastCtx={};
+
+const typeLabels={
+  lifestyle:'Imagen lifestyle con el producto en un contexto de uso real y aspiracional',
+  copy:'Imagen publicitaria con texto/copy superpuesto de alto impacto',
+  antesdespues:'Imagen antes y después mostrando la transformación real del producto',
+  comparativa:'Imagen comparativa nosotros vs competencia destacando ventajas'
+};
+const tips={
+  lifestyle:'Tip: En ChatGPT usa GPT-4o, adjunta la imagen del producto y pega este prompt. Especifica siempre la iluminación.',
+  copy:'Tip: DALL-E a veces falla con texto. Genera la imagen sin texto y añade el copy en Canva.',
+  antesdespues:'Tip: Genera cada panel (antes/después) por separado y únelos en Canva para más control.',
+  comparativa:'Tip: Genera cada columna por separado en la IA y únelas en Canva.'
+};
+
+function selectType(btn){
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedType=btn.dataset.type;
+}
+function toggleChip(el,group){
+  const val=el.dataset.val;
+  if(el.classList.contains('active')){el.classList.remove('active');chips[group]=chips[group].filter(v=>v!==val);}
+  else{el.classList.add('active');chips[group].push(val);}
+}
+function toggleSingle(el){
+  if(el.classList.contains('active')){el.classList.remove('active');selectedTitulo='';}
+  else{document.querySelectorAll('.chip.titulo').forEach(c=>c.classList.remove('active'));el.classList.add('active');selectedTitulo=el.dataset.val;}
+}
+function handleUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  imageMediaType=file.type||'image/jpeg';
+  const r=new FileReader();
+  r.onload=ev=>{
+    imageBase64=ev.target.result.split(',')[1];
+    const img=document.getElementById('previewImg');
+    img.src=ev.target.result;img.style.display='block';
+    document.getElementById('uploadLabel').textContent=file.name;
+    document.getElementById('uploadZone').classList.add('has-image');
+    document.getElementById('uploadNote').classList.add('visible');
+  };r.readAsDataURL(file);
+}
+
+function buildCtx(){
+  const catEl=document.getElementById('category');
+  return{
+    name:document.getElementById('productName').value.trim(),
+    category:catEl.options[catEl.selectedIndex].value||'ecommerce',
+    benefit:document.getElementById('benefit').value.trim(),
+    size:document.getElementById('size').value,
+    lang:document.getElementById('lang').value,
+    gender:document.getElementById('avatarGender').value,
+    age:document.getElementById('avatarAge').value,
+    nse:document.getElementById('avatarNse').value,
+    avatarDesc:document.getElementById('avatarDesc').value.trim(),
+    reference:document.getElementById('reference').value.trim(),
+    angles:chips.angle.join(', ')||'alto impacto visual y persuasivo',
+    lifestyles:chips.life.join(', '),
+    pains:chips.pain.join(', '),
+    varCount:document.getElementById('varCount').value,
+    varFactors:chips.var.join(', ')||'escena, composición y mood',
+    type:selectedType,
+    titulo:selectedTitulo||'máximo impacto que detenga el scroll'
+  };
+}
+
+function buildAvatarStr(ctx){
+  let s='';
+  if(ctx.gender)s+=`Género: ${ctx.gender}. `;
+  if(ctx.age)s+=`Edad: ${ctx.age} años. `;
+  if(ctx.nse)s+=`NSE: ${ctx.nse}. `;
+  if(ctx.lifestyles)s+=`Estilo de vida: ${ctx.lifestyles}. `;
+  if(ctx.pains)s+=`Dolores/objeciones: ${ctx.pains}. `;
+  if(ctx.avatarDesc)s+=ctx.avatarDesc;
+  return s.trim()||'público general de ecommerce';
+}
+
+function extractJSON(raw){
+  try{return JSON.parse(raw);}catch(e){}
+  const cleaned=raw.replace(/```json|```/g,'').trim();
+  try{return JSON.parse(cleaned);}catch(e){}
+  const m=raw.match(/\{[\s\S]*\}/);
+  if(m){try{return JSON.parse(m[0]);}catch(e){}}
+  const get=(key)=>{const re=new RegExp(`"${key}"\\s*:\\s*"([\\s\\S]*?)"(?=\\s*[,}])`,'i');const m=raw.match(re);return m?m[1].replace(/\\n/g,'\n').replace(/\\"/g,'"'):'';}
+  return{titulo:get('titulo'),copy:get('copy'),prompt_imagen:get('prompt_imagen'),variaciones:[]};
+}
+
+async function callAPI(system,userMsg){
+  let messages;
+  if(imageBase64){
+    messages=[{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:imageMediaType,data:imageBase64}},
+      {type:'text',text:userMsg+'\n\nAnaliza la imagen del producto adjunta para describir el packaging con precisión en los prompts.'}
+    ]}];
+  }else{
+    messages=[{role:'user',content:userMsg}];
+  }
+  const resp=await fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system,messages})
+  });
+  if(!resp.ok){const e=await resp.text();throw new Error('Error API: '+e);}
+  const data=await resp.json();
+  return data.content?.map(b=>b.text||'').join('')||'';
+}
+
+async function generateAll(){
+  const ctx=buildCtx();
+  if(!imageBase64){alert('⚠️ Sube la imagen del producto primero.');document.getElementById('uploadZone').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  if(!ctx.name&&!ctx.benefit){alert('Ingresa el nombre del producto o su beneficio.');return;}
+  lastCtx=ctx;
+  const errEl=document.getElementById('errorMsg');errEl.classList.remove('visible');
+  document.getElementById('loadingBar').classList.add('visible');
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('loadingMsg').textContent='Analizando producto y generando tu ad completo...';
+
+  const avatarStr=buildAvatarStr(ctx);
+  const langInstr=ctx.lang==='Inglés'?'Respond entirely in English.':'Responde completamente en español.';
+  const refBlock=ctx.reference?`\nReferencia visual: "${ctx.reference}"`:'';
+
+  const system=`Eres un experto en publicidad de ecommerce, copywriting de alto impacto y generación de imágenes con IA para Meta Ads.
+Responde ÚNICAMENTE con JSON válido puro. Sin texto antes ni después. Sin backticks. Sin bloques de código.
+El JSON debe tener exactamente estas claves: titulo, copy, prompt_imagen, variaciones (array de objetos con claves: diferencia, prompt).`;
+
+  const userMsg=`Crea un anuncio completo para Meta Ads.
+
+Producto: ${ctx.name||'producto de ecommerce'}
+Categoría: ${ctx.category}
+Beneficio: ${ctx.benefit||'no especificado'}
+Tipo de imagen: ${typeLabels[ctx.type]}
+Ángulo de venta: ${ctx.angles}
+Formato: ${ctx.size} px
+Avatar: ${avatarStr}${refBlock}
+
+Genera este JSON puro (sin backticks):
+{
+  "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación.",
+  "copy": "60-120 palabras. Gancho que apunte al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
+  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), título del anuncio integrado en la composición, calidad 8K. El modelo/escena debe resonar visualmente con el avatar descrito.",
+  "variaciones": [
+    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"diferencia": "qué cambió respecto al prompt principal en variación ${i+1} (${ctx.varFactors})", "prompt": "prompt completo ultra-detallado para variación ${i+1}"}`).join(',\n    ')}
+  ]
+}
+
+${langInstr}`;
+
+  try{
+    const raw=await callAPI(system,userMsg);
+    const parsed=extractJSON(raw);
+    document.getElementById('tituloDisplay').textContent=parsed.titulo||'(sin título)';
+    document.getElementById('copyDisplay').textContent=parsed.copy||'(sin copy)';
+    document.getElementById('promptDisplay').textContent=parsed.prompt_imagen||'(sin prompt)';
+    document.getElementById('tipBox').textContent=tips[ctx.type]||'';
+
+    const varContainer=document.getElementById('variationsContainer');
+    varContainer.innerHTML='';
+    if(parsed.variaciones&&parsed.variaciones.length){
+      parsed.variaciones.forEach((v,i)=>{
+        const div=document.createElement('div');
+        div.className='var-block';
+        div.innerHTML=`<div class="var-label">Variación ${i+1}</div><div class="var-diff">↳ ${v.diferencia||''}</div><div class="result-text" id="var${i}">${v.prompt||''}</div><button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar</button>`;
+        varContainer.appendChild(div);
+      });
+    }
+    document.getElementById('results').classList.add('visible');
+  }catch(e){
+    errEl.textContent='Error: '+e.message+'. Intenta de nuevo.';errEl.classList.add('visible');
+  }
+  document.getElementById('loadingBar').classList.remove('visible');
+}
+
+async function regenPart(part){
+  const ctx=lastCtx;
+  if(!ctx.name&&!ctx.benefit){alert('Genera primero el ad completo.');return;}
+  document.getElementById('loadingBar').classList.add('visible');
+  const langInstr=ctx.lang==='Inglés'?'Respond in English.':'Responde en español.';
+  const avatarStr=buildAvatarStr(ctx);
+
+  try{
+    if(part==='copy'){
+      document.getElementById('loadingMsg').textContent='Generando nuevo copy...';
+      const raw=await callAPI(
+        'Eres experto en copywriting para Meta Ads. Responde SOLO con el copy, sin títulos ni explicaciones.',
+        `Escribe un copy nuevo y diferente. Producto: ${ctx.name}. Beneficio: ${ctx.benefit}. Ángulo: ${ctx.angles}. Avatar: ${avatarStr}. Gancho+beneficio+prueba social+CTA. 60-120 palabras. ${langInstr}`
+      );
+      document.getElementById('copyDisplay').textContent=raw.trim();
+    }else if(part==='prompt'){
+      document.getElementById('loadingMsg').textContent='Generando nuevo prompt...';
+      const raw=await callAPI(
+        'Eres experto en prompts de imágenes publicitarias para Meta Ads. Responde SOLO con el prompt.',
+        `Prompt nuevo para una ${typeLabels[ctx.type]}. Producto: ${ctx.name}. Beneficio: ${ctx.benefit}. Avatar: ${avatarStr}. Formato: ${ctx.size}. Describe escena, composición, iluminación, paleta, mood, estilo fotográfico, packaging del producto, calidad 8K. ${langInstr}`
+      );
+      document.getElementById('promptDisplay').textContent=raw.trim();
+    }else if(part==='variaciones'){
+      document.getElementById('loadingMsg').textContent='Generando nuevas variaciones...';
+      const system=`Eres experto en publicidad de ecommerce. Responde ÚNICAMENTE con JSON puro. Sin backticks.`;
+      const raw=await callAPI(system,
+        `Genera ${ctx.varCount} variaciones de prompts para una ${typeLabels[ctx.type]} de Meta Ads. Producto: ${ctx.name}. Avatar: ${avatarStr}. Cada variación debe cambiar: ${ctx.varFactors}. JSON puro: {"variaciones":[{"diferencia":"qué cambió","prompt":"prompt completo"}]}. ${langInstr}`
+      );
+      const parsed=extractJSON(raw);
+      const varContainer=document.getElementById('variationsContainer');
+      varContainer.innerHTML='';
+      if(parsed.variaciones&&parsed.variaciones.length){
+        parsed.variaciones.forEach((v,i)=>{
+          const div=document.createElement('div');
+          div.className='var-block';
+          div.innerHTML=`<div class="var-label">Variación ${i+1}</div><div class="var-diff">↳ ${v.diferencia||''}</div><div class="result-text" id="var${i}">${v.prompt||''}</div><button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar</button>`;
+          varContainer.appendChild(div);
+        });
+      }
+    }
+  }catch(e){
+    const errEl=document.getElementById('errorMsg');
+    errEl.textContent='Error: '+e.message;errEl.classList.add('visible');
+  }
+  document.getElementById('loadingBar').classList.remove('visible');
+}
+
+function copyEl(id){
+  const txt=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btns=document.querySelectorAll('.copy-btn');
+    btns.forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(id)){const orig=b.textContent;b.textContent='✓ Copiado';setTimeout(()=>{b.textContent=orig;},2000);}});
+  });
+}
+</script>
+</body>
+</html>
