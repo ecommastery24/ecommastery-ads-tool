@@ -89,6 +89,7 @@
     .copy-btn:hover{background:#e8e6e0}
 
     .titulo-display{font-size:24px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:4px}
+    .subtitulo-display{font-size:15px;font-weight:400;color:#555;line-height:1.4;margin-bottom:6px;font-style:italic}
     .titulo-sub{font-size:11px;color:#aaa}
 
     .result-text{font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;word-break:break-word}
@@ -106,14 +107,41 @@
 
     .hint{font-size:12px;color:#999;margin-bottom:10px;line-height:1.5}
 
+    .limit-bar{margin-top:10px;padding:10px 14px;background:#f5f4f0;border-radius:8px;display:flex;align-items:center;gap:12px}
+    .limit-bar span{font-size:12px;color:#666;white-space:nowrap;min-width:200px}
+    .limit-track{flex:1;height:6px;background:#e0ddd8;border-radius:10px;overflow:hidden}
+    .limit-fill{height:100%;background:#c9f04a;border-radius:10px;transition:width .3s}
+    .limit-bar.warning span{color:#c0392b}
+    .limit-bar.warning .limit-fill{background:#e74c3c}
     .tip-box{background:#f0f9e0;border:1px solid #c5e88a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#3a6b00;line-height:1.6}
+    .admin-zone{position:fixed;bottom:16px;right:16px;z-index:999}
+    .admin-dot{width:10px;height:10px;background:#2a2a2a;border-radius:50%;cursor:pointer;opacity:.3;transition:opacity .2s}
+    .admin-dot:hover{opacity:.8}
+    .admin-box{display:none;background:#1a1a1a;border-radius:10px;padding:12px;margin-top:6px;min-width:200px}
+    .admin-box.visible{display:block}
+    .admin-box input{width:100%;box-sizing:border-box;background:#2a2a2a;border:1px solid #444;border-radius:6px;padding:7px 10px;color:#fff;font-size:13px;outline:none}
+    .admin-box input::placeholder{color:#666}
+    .admin-msg{font-size:11px;margin-top:6px;text-align:center;display:none}
+    .admin-msg.ok{color:#c9f04a;display:block}
+    .admin-msg.err{color:#e74c3c;display:block}
+    .admin-badge{display:none;background:#c9f04a;color:#1a1a1a;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .admin-badge.visible{display:inline-block}
   </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-brand">Ecommastery <span>VIP</span></div>
+  <div class="topbar-brand">Ecommastery <span>VIP</span><span class="admin-badge" id="adminBadge">ADMIN</span></div>
   <div class="topbar-sub">Generador de Ads con IA</div>
+</div>
+
+<!-- ADMIN HIDDEN ZONE -->
+<div class="admin-zone">
+  <div class="admin-dot" onclick="toggleAdminBox()" title=""></div>
+  <div class="admin-box" id="adminBox">
+    <input type="password" id="adminInput" placeholder="Código de acceso" onkeydown="if(event.key==='Enter')checkAdmin()"/>
+    <div class="admin-msg" id="adminMsg"></div>
+  </div>
 </div>
 
 <div class="hero">
@@ -329,6 +357,10 @@
   </div>
 
   <button class="generate-btn" onclick="generateAll()">✦ Generar título + copy + prompts de imagen</button>
+  <div class="limit-bar" id="limitBar">
+    <span id="limitText">20 generaciones disponibles hoy</span>
+    <div class="limit-track"><div class="limit-fill" id="limitFill"></div></div>
+  </div>
   <div class="error" id="errorMsg"></div>
 
   <div class="loading" id="loadingBar">
@@ -341,10 +373,11 @@
     <div class="result-card">
       <div class="result-header">
         <span class="result-title">Título del anuncio</span>
-        <button class="copy-btn" onclick="copyEl('tituloDisplay')">Copiar</button>
+        <button class="copy-btn" onclick="copyEl('tituloDisplay')">Copiar título</button>
       </div>
       <div class="titulo-display" id="tituloDisplay"></div>
-      <div class="titulo-sub">2–4 palabras · para superponer en la imagen y como headline del ad</div>
+      <div class="subtitulo-display" id="subtituloDisplay"></div>
+      <div class="titulo-sub">Título (2–4 palabras) + subtítulo de apoyo · ambos van en la imagen y como headline del ad</div>
     </div>
 
     <div class="result-card">
@@ -382,6 +415,72 @@
 </div>
 
 <script>
+const DAILY_LIMIT = 20;
+const ADMIN_CODE = 'ecommastery2024';
+
+function isAdmin(){ return sessionStorage.getItem('ecom_admin')==='1'; }
+function getTodayKey(){ return 'ecom_uses_'+new Date().toISOString().slice(0,10); }
+function getUsesLeft(){
+  if(isAdmin()) return 999;
+  const key=getTodayKey();
+  const used=parseInt(localStorage.getItem(key)||'0');
+  return Math.max(0, DAILY_LIMIT - used);
+}
+function incrementUses(){
+  if(isAdmin()) return;
+  const key=getTodayKey();
+  const used=parseInt(localStorage.getItem(key)||'0');
+  localStorage.setItem(key, used+1);
+}
+function updateLimitBar(){
+  const bar=document.getElementById('limitBar');
+  const fill=document.getElementById('limitFill');
+  const txt=document.getElementById('limitText');
+  if(isAdmin()){
+    txt.textContent='✦ Acceso administrador — generaciones ilimitadas';
+    fill.style.width='100%';
+    bar.classList.remove('warning');
+    return;
+  }
+  const left=getUsesLeft();
+  const pct=(left/DAILY_LIMIT)*100;
+  fill.style.width=pct+'%';
+  if(left===0){
+    txt.textContent='Alcanzaste tu límite de 20 generaciones diarias. Vuelve mañana 🔄';
+    bar.classList.add('warning');
+  } else if(left<=5){
+    txt.textContent=`⚠️ Te quedan ${left} generaciones hoy`;
+    bar.classList.add('warning');
+  } else {
+    txt.textContent=`${left} de ${DAILY_LIMIT} generaciones disponibles hoy`;
+    bar.classList.remove('warning');
+  }
+}
+function toggleAdminBox(){
+  const box=document.getElementById('adminBox');
+  box.classList.toggle('visible');
+  if(box.classList.contains('visible')) setTimeout(()=>document.getElementById('adminInput').focus(),100);
+}
+function checkAdmin(){
+  const val=document.getElementById('adminInput').value.trim();
+  const msg=document.getElementById('adminMsg');
+  if(val===ADMIN_CODE){
+    sessionStorage.setItem('ecom_admin','1');
+    msg.textContent='✓ Acceso admin activado';
+    msg.className='admin-msg ok';
+    document.getElementById('adminBadge').classList.add('visible');
+    updateLimitBar();
+    setTimeout(()=>{document.getElementById('adminBox').classList.remove('visible');},1500);
+  } else {
+    msg.textContent='Código incorrecto';
+    msg.className='admin-msg err';
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  updateLimitBar();
+  if(isAdmin()) document.getElementById('adminBadge').classList.add('visible');
+});
+
 let selectedType='lifestyle';
 let chips={angle:[],life:[],pain:[],var:['Escena y fondo diferentes','Composición y encuadre distintos','Paleta de colores y mood distintos']};
 let selectedTitulo='';
@@ -512,6 +611,11 @@ async function callAPI(system,userMsg){
 }
 
 async function generateAll(){
+  if(getUsesLeft()<=0){
+    document.getElementById('errorMsg').textContent='Alcanzaste tu límite de 20 generaciones diarias. Vuelve mañana 🔄';
+    document.getElementById('errorMsg').classList.add('visible');
+    return;
+  }
   const ctx=buildCtx();
   if(!imageBase64){alert('⚠️ Sube la imagen del producto primero.');document.getElementById('uploadZone').scrollIntoView({behavior:'smooth',block:'center'});return;}
   if(!ctx.name&&!ctx.benefit){alert('Ingresa el nombre del producto o su beneficio.');return;}
@@ -535,18 +639,18 @@ Producto: ${ctx.name||'producto de ecommerce'}
 Categoría: ${ctx.category}
 Beneficio: ${ctx.benefit||'no especificado'}
 Tipo de imagen: ${typeLabels[ctx.type]}
-Enfoque de la imagen: ${ctx.focus}
 Ángulo de venta: ${ctx.angles}
 Formato: ${ctx.size} px
 Avatar: ${avatarStr}${refBlock}
 
 Genera este JSON puro (sin backticks):
 {
-  "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación.",
+  "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación. Corto y que detenga el scroll.",
+  "subtitulo": "1 línea corta de apoyo (máx 8 palabras) que refuerce el título — puede ser el beneficio principal, prueba social o una micro-promesa. Ej: 'Resultados visibles desde el primer uso' o '+4.800 personas ya lo comprobaron'.",
   "copy": "60-120 palabras. Gancho que apunte al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
-  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), calidad 8K. El modelo/escena debe resonar con el avatar. IMPORTANTE: el texto superpuesto en la imagen debe ser exactamente el título generado — especifica tipografía, posición, color y tamaño del texto en la imagen.",
+  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), calidad 8K. El modelo/escena debe resonar con el avatar. IMPORTANTE: especifica DOS niveles de texto superpuesto en la imagen: (1) TÍTULO en tipografía bold grande, posición superior o central, color contrastante — usa exactamente el titulo generado; (2) SUBTÍTULO en tipografía más pequeña y ligera debajo del título — usa exactamente el subtitulo generado. Especifica fuente, tamaño, color y posición exacta de cada texto.",
   "variaciones": [
-    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"diferencia": "qué cambió respecto al prompt principal en variación ${i+1} (${ctx.varFactors})", "prompt": "prompt completo ultra-detallado para variación ${i+1}"}`).join(',\n    ')}
+    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"diferencia": "qué cambió respecto al prompt principal en variación ${i+1} (${ctx.varFactors})", "prompt": "prompt completo ultra-detallado para variación ${i+1} incluyendo los dos niveles de texto: título y subtítulo"}`).join(',\n    ')}
   ]
 }
 
@@ -556,9 +660,12 @@ ${langInstr}`;
     const raw=await callAPI(system,userMsg);
     const parsed=extractJSON(raw);
     document.getElementById('tituloDisplay').textContent=parsed.titulo||'(sin título)';
+    document.getElementById('subtituloDisplay').textContent=parsed.subtitulo||'';
     document.getElementById('copyDisplay').textContent=parsed.copy||'(sin copy)';
     document.getElementById('promptDisplay').textContent=parsed.prompt_imagen||'(sin prompt)';
     document.getElementById('tipBox').textContent=tips[ctx.type]||'';
+    incrementUses();
+    updateLimitBar();
 
     const varContainer=document.getElementById('variationsContainer');
     varContainer.innerHTML='';
@@ -634,4 +741,3 @@ function copyEl(id){
 </script>
 </body>
 </html>
-
