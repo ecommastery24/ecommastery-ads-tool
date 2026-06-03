@@ -57,6 +57,7 @@
     .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
     .chip{background:#f5f4f0;border:1px solid #e0ddd8;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:12px;color:#555;transition:all .15s;white-space:nowrap;font-weight:500}
     .chip.angle.active{background:#e8f5e9;border-color:#81c784;color:#2e7d32}
+    .chip.focus.active{background:#fce4ec;border-color:#f48fb1;color:#880e4f}
     .chip.life.active{background:#ede7f6;border-color:#9575cd;color:#4527a0}
     .chip.pain.active{background:#fce4ec;border-color:#f48fb1;color:#880e4f}
     .chip.titulo.active{background:#fff8e1;border-color:#ffca28;color:#7b5800}
@@ -140,7 +141,35 @@
       </button>
       <button class="type-btn" data-type="comparativa" onclick="selectType(this)">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/></svg>
-        <span>Comparativa</span>
+        <span>Vs competencia</span>
+      </button>
+      <button class="type-btn" data-type="beneficios" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span>Beneficios</span>
+      </button>
+      <button class="type-btn" data-type="prueba_social" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Prueba social</span>
+      </button>
+      <button class="type-btn" data-type="testimonio" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>Testimonio</span>
+      </button>
+      <button class="type-btn" data-type="urgencia" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Urgencia / oferta</span>
+      </button>
+      <button class="type-btn" data-type="producto_hero" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Producto hero</span>
+      </button>
+      <button class="type-btn" data-type="el_problema" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>El problema</span>
+      </button>
+      <button class="type-btn" data-type="comparativa_producto" onclick="selectType(this)">
+        <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+        <span>Comparativa de productos</span>
       </button>
     </div>
   </div>
@@ -264,6 +293,14 @@
       <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Apuntar al dolor profundo del avatar">Apunta al dolor</div>
       <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Generar curiosidad irresistible">Curiosidad</div>
       <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Autoridad y resultados comprobados">Autoridad</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Frustración acumulada por no encontrar solución">Frustración</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Impacto en relaciones personales y vida social">Relaciones</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Deseo de sentirse atractivo/a y deseado/a">Deseo / atracción</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Vergüenza e inseguridad que provoca el problema">Vergüenza</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Qué piensan los demás — mirada y juicio social">Mirada social</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Identidad — quién quiere ser y cómo verse a sí mismo">Identidad</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Dinero perdido en soluciones que no funcionaron">Dinero perdido</div>
+      <div class="chip angle" onclick="toggleChip(this,'angle')" data-val="Tiempo que lleva sufriendo este problema sin solución">Tiempo perdido</div>
     </div>
     <div class="form-row full">
       <label>Referencia visual / estilo (opcional)</label>
@@ -348,6 +385,7 @@
 let selectedType='lifestyle';
 let chips={angle:[],life:[],pain:[],var:['Escena y fondo diferentes','Composición y encuadre distintos','Paleta de colores y mood distintos']};
 let selectedTitulo='';
+let selectedFocus='';
 let imageBase64=null;
 let imageMediaType='image/jpeg';
 let lastCtx={};
@@ -356,7 +394,14 @@ const typeLabels={
   lifestyle:'Imagen lifestyle con el producto en un contexto de uso real y aspiracional',
   copy:'Imagen publicitaria con texto/copy superpuesto de alto impacto',
   antesdespues:'Imagen antes y después mostrando la transformación real del producto',
-  comparativa:'Imagen comparativa nosotros vs competencia destacando ventajas'
+  comparativa:'Imagen comparativa nosotros vs competencia destacando ventajas',
+  beneficios:'Imagen que muestra visualmente los beneficios clave del producto',
+  prueba_social:'Imagen de prueba social con personas reales usando el producto y obteniendo resultados',
+  testimonio:'Imagen tipo testimonio de cliente real con resultado visible y cita corta',
+  urgencia:'Imagen de urgencia u oferta limitada que activa la compra inmediata',
+  producto_hero:'Imagen hero del producto — packaging premium, iluminación de estudio, presentación aspiracional',
+  el_problema:'Imagen que muestra el dolor o problema del avatar antes de descubrir el producto',
+  comparativa_producto:'Imagen comparativa lado a lado entre dos productos similares destacando ventajas del nuestro'
 };
 const tips={
   lifestyle:'Tip: En ChatGPT usa GPT-4o, adjunta la imagen del producto y pega este prompt. Especifica siempre la iluminación.',
@@ -375,9 +420,18 @@ function toggleChip(el,group){
   if(el.classList.contains('active')){el.classList.remove('active');chips[group]=chips[group].filter(v=>v!==val);}
   else{el.classList.add('active');chips[group].push(val);}
 }
-function toggleSingle(el){
-  if(el.classList.contains('active')){el.classList.remove('active');selectedTitulo='';}
-  else{document.querySelectorAll('.chip.titulo').forEach(c=>c.classList.remove('active'));el.classList.add('active');selectedTitulo=el.dataset.val;}
+function toggleSingle(el, group){
+  const cls = group || 'titulo';
+  if(el.classList.contains('active')){
+    el.classList.remove('active');
+    if(cls==='titulo') selectedTitulo='';
+    else selectedFocus='';
+  } else {
+    document.querySelectorAll(`.chip.${cls}`).forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    if(cls==='titulo') selectedTitulo=el.dataset.val;
+    else selectedFocus=el.dataset.val;
+  }
 }
 function handleUpload(e){
   const file=e.target.files[0];if(!file)return;
@@ -481,6 +535,7 @@ Producto: ${ctx.name||'producto de ecommerce'}
 Categoría: ${ctx.category}
 Beneficio: ${ctx.benefit||'no especificado'}
 Tipo de imagen: ${typeLabels[ctx.type]}
+Enfoque de la imagen: ${ctx.focus}
 Ángulo de venta: ${ctx.angles}
 Formato: ${ctx.size} px
 Avatar: ${avatarStr}${refBlock}
@@ -489,7 +544,7 @@ Genera este JSON puro (sin backticks):
 {
   "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación.",
   "copy": "60-120 palabras. Gancho que apunte al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
-  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), título del anuncio integrado en la composición, calidad 8K. El modelo/escena debe resonar visualmente con el avatar descrito.",
+  "prompt_imagen": "Prompt ultra-detallado para DALL-E / ChatGPT describiendo: escena, composición, iluminación, paleta, mood, estilo fotográfico (hyperrealistic commercial photography), cómo aparece el producto con su packaging exacto (describe el packaging de la imagen adjunta), calidad 8K. El modelo/escena debe resonar con el avatar. IMPORTANTE: el texto superpuesto en la imagen debe ser exactamente el título generado — especifica tipografía, posición, color y tamaño del texto en la imagen.",
   "variaciones": [
     ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"diferencia": "qué cambió respecto al prompt principal en variación ${i+1} (${ctx.varFactors})", "prompt": "prompt completo ultra-detallado para variación ${i+1}"}`).join(',\n    ')}
   ]
@@ -579,3 +634,4 @@ function copyEl(id){
 </script>
 </body>
 </html>
+
