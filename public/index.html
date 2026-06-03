@@ -564,7 +564,8 @@ function selectType(btn){
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   selectedType=btn.dataset.type;
-  document.getElementById('refImageCard').style.display = selectedType==='referencia' ? 'block' : 'none';
+  const refCard=document.getElementById('refImageCard');
+  if(refCard) refCard.style.display = selectedType==='referencia' ? 'block' : 'none';
 }
 function toggleChip(el,group){
   const val=el.dataset.val;
