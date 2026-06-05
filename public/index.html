@@ -10,9 +10,9 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Inter',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
 
-    .topbar{background:#000;padding:16px 24px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #2a2200;position:relative}
+    .topbar{background:#000;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #2a2200;gap:4px}
     .topbar-logo{height:56px;object-fit:contain}
-    .topbar-sub{color:#8a7a50;font-size:12px;letter-spacing:.05em;display:flex;align-items:center;gap:6px;position:absolute;right:24px}
+    .topbar-sub{color:#8a7a50;font-size:12px;letter-spacing:.05em;display:flex;align-items:center;gap:6px}
 
     .hero{background:linear-gradient(160deg,#0a0a0a 0%,#1a1200 100%);padding:36px 24px 44px;text-align:center;border-bottom:1px solid #2a2200;position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.12) 0%,transparent 70%);pointer-events:none}
@@ -492,7 +492,7 @@
 </div><!-- end mainApp -->
 
 <script>
-const DAILY_LIMIT = 20;
+const DAILY_LIMIT = 5;
 const ADMIN_CODE = 'ecommastery2024';
 
 function isAdmin(){ return sessionStorage.getItem('ecom_admin')==='1'; }
