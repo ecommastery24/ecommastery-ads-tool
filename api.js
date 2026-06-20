@@ -1,3 +1,33 @@
+const DAILY_LIMIT = 5;
+const ADMIN_CODE = 'ecommastery2024';
+
+async function redisCommand(...args) {
+  const url = process.env.UPSTASH_REDIS_KV_KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_KV_KV_REST_API_TOKEN;
+  if (!url || !token) throw new Error('Redis not configured');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(args)
+  });
+  const data = await res.json();
+  return data.result;
+}
+
+function getClientIp(req) {
+  const fwd = req.headers['x-forwarded-for'];
+  if (fwd) return fwd.split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+}
+
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -9,7 +39,36 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { system, messages } = req.body;
+    const { system, messages, adminCode } = req.body;
+    const isAdmin = adminCode && adminCode === ADMIN_CODE;
+
+    if (!isAdmin) {
+      const ip = getClientIp(req);
+      const key = `limit:${ip}:${getTodayStr()}`;
+
+      let current = 0;
+      try {
+        current = parseInt(await redisCommand('GET', key)) || 0;
+      } catch (e) {
+        // Si Redis falla, dejamos pasar para no romper la herramienta
+        current = 0;
+      }
+
+      if (current >= DAILY_LIMIT) {
+        return res.status(429).json({
+          error: `Alcanzaste tu límite de ${DAILY_LIMIT} generaciones diarias. Vuelve mañana 🔄`
+        });
+      }
+
+      try {
+        const newVal = await redisCommand('INCR', key);
+        if (newVal === 1) {
+          await redisCommand('EXPIRE', key, 90000);
+        }
+      } catch (e) {
+        // Continuar aunque falle el incremento
+      }
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
