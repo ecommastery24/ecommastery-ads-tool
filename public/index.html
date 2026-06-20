@@ -761,9 +761,11 @@ Genera este JSON puro (sin backticks):
   "copy": "60-120 palabras. Gancho al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
   "prompt_imagen": "Prompt ultra-detallado para DALL-E/ChatGPT: escena, composición, iluminación, paleta, mood, estilo fotográfico hyperrealistic commercial photography, packaging exacto del producto (describe la imagen adjunta), calidad 8K, avatar en escena. TEXTO EN IMAGEN: (1) TÍTULO bold grande usando exactamente el titulo generado, especifica tipografía/posición/color; (2) SUBTÍTULO más pequeño debajo usando exactamente el subtitulo generado.${ctx.stickers ? ` STICKERS: incluye visualmente ${ctx.stickers} como elementos superpuestos bien diseñados.` : ''}${ctx.precioActual ? ` PRECIO: muestra ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado encima` : ''} en tipografía bold llamativa.` : ''}",
   "variaciones": [
-    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"titulo_var": "título DIFERENTE al principal — mismo ángulo de venta pero distinta redacción, 2-4 palabras", "subtitulo_var": "subtítulo diferente al principal — misma propuesta de valor pero distinto enfoque", "diferencia": "qué cambió en escena/composición/paleta en variación ${i+1}", "prompt": "prompt completo ultra-detallado variación ${i+1} — misma temática y avatar pero ${ctx.varFactors} diferentes. Incluir titulo_var y subtitulo_var como texto superpuesto.${ctx.stickers ? ` Mantener stickers: ${ctx.stickers}.` : ''}${ctx.precioActual ? ` Mantener precio ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado` : ''}.` : ''}"}`).join(',\n    ')}
+    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"titulo_var": "título DIFERENTE al principal — mismo ángulo de venta pero distinta redacción, 2-4 palabras", "subtitulo_var": "subtítulo diferente al principal — misma propuesta de valor pero distinto enfoque", "diferencia": "qué cambió en escena/composición/paleta en variación ${i+1} (NO cambia el tipo de imagen)", "prompt": "prompt completo ultra-detallado variación ${i+1}. OBLIGATORIO mantener EXACTAMENTE el mismo tipo de imagen (${typeLabels[ctx.type]}), el mismo ángulo de venta (${ctx.angles}) y el mismo avatar (${avatarStr}) que el prompt principal — solo cambiar ${ctx.varFactors}. Incluir titulo_var y subtitulo_var como texto superpuesto.${ctx.stickers ? ` Mantener stickers: ${ctx.stickers}.` : ''}${ctx.precioActual ? ` Mantener precio ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado` : ''}.` : ''}"}`).join(',\n    ')}
   ]
 }
+
+IMPORTANTE: TODAS las variaciones deben ser del mismo tipo de imagen "${typeLabels[ctx.type]}" — si el tipo es "antes y después", las 3/4/5 variaciones deben ser TODAS antes y después, solo cambiando ${ctx.varFactors}. Nunca cambies el tipo de imagen, el ángulo de venta ni el avatar entre variaciones.
 
 ${langInstr}`;
 
@@ -827,7 +829,7 @@ async function regenPart(part){
       document.getElementById('loadingMsg').textContent='Generando nuevas variaciones...';
       const system=`Eres experto en publicidad de ecommerce. Responde ÚNICAMENTE con JSON puro. Sin backticks.`;
       const raw=await callAPI(system,
-        `Genera ${ctx.varCount} variaciones de prompts para una ${typeLabels[ctx.type]} de Meta Ads. Producto: ${ctx.name}. Avatar: ${avatarStr}. Cada variación debe cambiar: ${ctx.varFactors}. JSON puro: {"variaciones":[{"diferencia":"qué cambió","prompt":"prompt completo"}]}. ${langInstr}`
+        `Genera ${ctx.varCount} variaciones de prompts para una ${typeLabels[ctx.type]} de Meta Ads. Producto: ${ctx.name}. Avatar: ${avatarStr}. Ángulo de venta: ${ctx.angles}. OBLIGATORIO: TODAS las variaciones deben mantener el mismo tipo de imagen (${typeLabels[ctx.type]}), el mismo ángulo de venta y el mismo avatar — solo cambiar: ${ctx.varFactors}. Cada variación necesita su propio título corto (2-4 palabras, mismo ángulo, distinta redacción) y subtítulo. JSON puro: {"variaciones":[{"titulo_var":"título de la variación","subtitulo_var":"subtítulo de apoyo","diferencia":"qué cambió visualmente (no el tipo de imagen)","prompt":"prompt completo manteniendo tipo de imagen, ángulo y avatar idénticos al original"}]}. ${langInstr}`
       );
       const parsed=extractJSON(raw);
       const varContainer=document.getElementById('variationsContainer');
@@ -836,7 +838,13 @@ async function regenPart(part){
         parsed.variaciones.forEach((v,i)=>{
           const div=document.createElement('div');
           div.className='var-block';
-          div.innerHTML=`<div class="var-label">Variación ${i+1}</div><div class="var-diff">↳ ${v.diferencia||''}</div><div class="result-text" id="var${i}">${v.prompt||''}</div><button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar</button>`;
+          div.innerHTML=`
+            <div class="var-label">Variación ${i+1}</div>
+            ${v.titulo_var?`<div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px">${v.titulo_var}</div>`:''}
+            ${v.subtitulo_var?`<div style="font-size:12px;color:#555;font-style:italic;margin-bottom:6px">${v.subtitulo_var}</div>`:''}
+            <div class="var-diff">↳ ${v.diferencia||''}</div>
+            <div class="result-text" id="var${i}">${v.prompt||''}</div>
+            <button class="copy-btn" style="margin-top:8px" onclick="copyEl('var${i}')">Copiar prompt</button>`;
           varContainer.appendChild(div);
         });
       }
