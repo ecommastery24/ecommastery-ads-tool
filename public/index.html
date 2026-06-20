@@ -755,7 +755,7 @@ Categoría: ${ctx.category}
 Beneficio: ${ctx.benefit||'no especificado'}
 Tipo de imagen: ${typeLabels[ctx.type]}
 Ángulo de venta: ${ctx.angles}
-Formato: ${ctx.size} px
+Formato de imagen: ${ctx.size} px (mantener esta proporción exacta en TODAS las imágenes, incluidas las variaciones)
 Avatar: ${avatarStr}${refBlock}${stickerBlock}${precioBlock}
 
 Genera este JSON puro (sin backticks):
@@ -763,13 +763,18 @@ Genera este JSON puro (sin backticks):
   "titulo": "2 a 4 palabras con enfoque en: ${ctx.titulo}. Sin signos de exclamación. Corto y que detenga el scroll.",
   "subtitulo": "1 línea corta de apoyo (máx 8 palabras) — beneficio, prueba social o micro-promesa.",
   "copy": "60-120 palabras. Gancho al dolor del avatar, beneficio creíble, prueba social, CTA claro. Emojis con moderación.",
-  "prompt_imagen": "Prompt ultra-detallado para DALL-E/ChatGPT: escena, composición, iluminación, paleta, mood, estilo fotográfico hyperrealistic commercial photography, packaging exacto del producto (describe la imagen adjunta), calidad 8K, avatar en escena. TEXTO EN IMAGEN: (1) TÍTULO bold grande usando exactamente el titulo generado, especifica tipografía/posición/color; (2) SUBTÍTULO más pequeño debajo usando exactamente el subtitulo generado.${ctx.stickers ? ` STICKERS: incluye visualmente ${ctx.stickers} como elementos superpuestos bien diseñados.` : ''}${ctx.precioActual ? ` PRECIO: muestra ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado encima` : ''} en tipografía bold llamativa.` : ''}",
+  "prompt_imagen": "Prompt ultra-detallado para DALL-E/ChatGPT: escena, composición, iluminación, paleta, mood, estilo fotográfico hyperrealistic commercial photography, packaging exacto del producto (describe la imagen adjunta), calidad 8K, formato/proporción ${ctx.size}, avatar en escena (especifica género, edad aproximada, estilo de vida del avatar pero NO inventes un nombre ni la describas como una persona específica e identificable). TEXTO EN IMAGEN: (1) TÍTULO bold grande usando exactamente el titulo generado, especifica tipografía/posición/color; (2) SUBTÍTULO más pequeño debajo usando exactamente el subtitulo generado.${ctx.stickers ? ` STICKERS: incluye visualmente ${ctx.stickers} como elementos superpuestos bien diseñados.` : ''}${ctx.precioActual ? ` PRECIO: muestra ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado encima` : ''} en tipografía bold llamativa.` : ''}",
   "variaciones": [
-    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"titulo_var": "título DIFERENTE al principal — mismo ángulo de venta pero distinta redacción, 2-4 palabras", "subtitulo_var": "subtítulo diferente al principal — misma propuesta de valor pero distinto enfoque", "diferencia": "qué cambió en escena/composición/paleta en variación ${i+1} (NO cambia el tipo de imagen)", "prompt": "prompt completo ultra-detallado variación ${i+1}. OBLIGATORIO mantener EXACTAMENTE el mismo tipo de imagen (${typeLabels[ctx.type]}), el mismo ángulo de venta (${ctx.angles}) y el mismo avatar (${avatarStr}) que el prompt principal — solo cambiar ${ctx.varFactors}. Incluir titulo_var y subtitulo_var como texto superpuesto.${ctx.stickers ? ` Mantener stickers: ${ctx.stickers}.` : ''}${ctx.precioActual ? ` Mantener precio ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado` : ''}.` : ''}"}`).join(',\n    ')}
+    ${Array.from({length:parseInt(ctx.varCount)},(_,i)=>`{"titulo_var": "título DIFERENTE al principal — mismo ángulo de venta pero distinta redacción, 2-4 palabras", "subtitulo_var": "subtítulo diferente al principal — misma propuesta de valor pero distinto enfoque", "diferencia": "qué cambió en escena/composición/paleta en variación ${i+1} (el tipo de imagen, formato y avatar NO cambian)", "prompt": "prompt completo ultra-detallado variación ${i+1}. OBLIGATORIO: (1) Tipo de imagen idéntico al principal: ${typeLabels[ctx.type]}. (2) Formato/proporción idéntico: ${ctx.size} px. (3) Ángulo de venta idéntico: ${ctx.angles}. (4) Mismo perfil de avatar (${avatarStr}) pero NO la misma persona exacta — varía ligeramente apariencia física dentro de ese mismo perfil demográfico. Solo cambiar entre variaciones: ${ctx.varFactors}. Incluir titulo_var y subtitulo_var como texto superpuesto.${ctx.stickers ? ` Mantener stickers: ${ctx.stickers}.` : ''}${ctx.precioActual ? ` Mantener precio ${ctx.precioActual}${ctx.precioAnterior ? ` con ${ctx.precioAnterior} tachado` : ''}.` : ''}"}`).join(',\n    ')}
   ]
 }
 
-IMPORTANTE: TODAS las variaciones deben ser del mismo tipo de imagen "${typeLabels[ctx.type]}" — si el tipo es "antes y después", las 3/4/5 variaciones deben ser TODAS antes y después, solo cambiando ${ctx.varFactors}. Nunca cambies el tipo de imagen, el ángulo de venta ni el avatar entre variaciones.
+REGLAS OBLIGATORIAS PARA LAS VARIACIONES (no negociables):
+1. TIPO DE IMAGEN: las ${ctx.varCount} variaciones deben ser TODAS de tipo "${typeLabels[ctx.type]}" — exactamente igual al prompt principal. Nunca cambiar a otro tipo de imagen.
+2. FORMATO: las ${ctx.varCount} variaciones deben usar exactamente el formato ${ctx.size} px.
+3. ÁNGULO DE VENTA: las ${ctx.varCount} variaciones deben usar el mismo ángulo: ${ctx.angles}.
+4. AVATAR: mismo perfil demográfico (${avatarStr}) en todas, pero NO debe ser la misma persona/modelo exacto en cada imagen — pequeñas variaciones de apariencia dentro de ese mismo perfil.
+5. Lo ÚNICO que puede variar entre las imágenes es: ${ctx.varFactors}.
 
 ${langInstr}`;
 
@@ -833,7 +838,11 @@ async function regenPart(part){
       document.getElementById('loadingMsg').textContent='Generando nuevas variaciones...';
       const system=`Eres experto en publicidad de ecommerce. Responde ÚNICAMENTE con JSON puro. Sin backticks.`;
       const raw=await callAPI(system,
-        `Genera ${ctx.varCount} variaciones de prompts para una ${typeLabels[ctx.type]} de Meta Ads. Producto: ${ctx.name}. Avatar: ${avatarStr}. Ángulo de venta: ${ctx.angles}. OBLIGATORIO: TODAS las variaciones deben mantener el mismo tipo de imagen (${typeLabels[ctx.type]}), el mismo ángulo de venta y el mismo avatar — solo cambiar: ${ctx.varFactors}. Cada variación necesita su propio título corto (2-4 palabras, mismo ángulo, distinta redacción) y subtítulo. JSON puro: {"variaciones":[{"titulo_var":"título de la variación","subtitulo_var":"subtítulo de apoyo","diferencia":"qué cambió visualmente (no el tipo de imagen)","prompt":"prompt completo manteniendo tipo de imagen, ángulo y avatar idénticos al original"}]}. ${langInstr}`
+        `Genera ${ctx.varCount} variaciones de prompts para una ${typeLabels[ctx.type]} de Meta Ads. Producto: ${ctx.name}. Avatar: ${avatarStr}. Ángulo de venta: ${ctx.angles}. Formato: ${ctx.size} px.
+
+REGLAS OBLIGATORIAS: 1) Todas las ${ctx.varCount} variaciones deben ser tipo "${typeLabels[ctx.type]}" — nunca cambiar a otro tipo. 2) Todas deben mantener el formato/proporción ${ctx.size} px. 3) Todas deben usar el ángulo de venta: ${ctx.angles}. 4) Mismo perfil de avatar (${avatarStr}) en todas pero variando ligeramente la apariencia física específica de la persona (no repetir el mismo modelo). 5) Lo único que cambia entre variaciones es: ${ctx.varFactors}.
+
+Cada variación necesita su propio título corto (2-4 palabras, mismo ángulo, distinta redacción) y subtítulo. JSON puro: {"variaciones":[{"titulo_var":"título de la variación","subtitulo_var":"subtítulo de apoyo","diferencia":"qué cambió visualmente (nunca el tipo de imagen, formato o ángulo)","prompt":"prompt completo manteniendo tipo de imagen, formato, ángulo y perfil de avatar idénticos al original"}]}. ${langInstr}`
       );
       const parsed=extractJSON(raw);
       const varContainer=document.getElementById('variationsContainer');
